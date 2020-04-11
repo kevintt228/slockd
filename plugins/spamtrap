@@ -1,0 +1,71 @@
+#!perl
+# vim: set cindent expandtab ts=4 sw=4:
+
+# spamtrap:    handle auto-send spam messages from machine / zombie
+#
+# description: a plugin automaticaly redirect spam to spamtrap/honeyport
+#              mail address to system blackhole/traning filter.
+#
+#      status: experimental
+use strict;
+
+sub init {
+    my $self = shift;
+    my $config = $self->config;
+
+    $self->{plugin_name} = 'SpamTrap';
+    $self->{trap_file} = $config->{spamtrap_list} || 'conf/spamtrap_list';
+    $self->{action} = $config->{spamtrap_action} || 'FILTER spamtrap:';
+
+    my $filter = $self->{action};
+    $filter = join(" ", @$filter) if ref $filter;
+
+    # formalize action value
+    $self->{action} = $filter;
+}
+
+sub pre_hook {
+    my $self = shift;
+    my $sender = $self->ar->{sender};
+    my $recip = lc $self->ar->{recipient};
+
+    return 'DUNNO' unless $recip;
+
+    $self->read_spamtrap_list;
+
+    my $list = $self->{trap_list};
+
+    return 'DUNNO' unless ref $list;
+
+    for my $w (@{$list}) {
+	if ($recip =~ $w) {
+	    $self->debug(0, "Found spamtrap from=<$sender>");
+	    return $self->{action} if $self->{action};
+        }
+    }
+    'DUNNO';
+}
+
+sub read_spamtrap_list {
+    my $self = shift;
+    my $file = $self->{trap_file};
+
+    return unless (-r $file);
+
+    my @array;
+
+    open (FH, "< $file") or return;
+    while (<FH>) {
+	s/#.*$//; s/^\s+//; s/\s+$//; next if $_ eq '';
+	if(/^\/(\S+)\/$/) {
+	    push @array, qr{$1}i;
+        } elsif(/^\S+$/) {
+	    push @array, qr{\Q$_\E$}i;
+        } else {
+	    $self->debug(1, "WARNING: $file line $.: unlike a mail address");
+        }
+    }
+    $self->{trap_list} = \@array;
+}
+
+1;
