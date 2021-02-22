@@ -1,0 +1,84 @@
+#!perl
+# vim: set cindent expandtab ts=4 sw=4:
+
+# clientlogctrl     HELO control plugin
+#
+# description: including whitelist and blacklist, can easily integrade
+#              with postfix, currently only support plain text format
+use Socket;
+use strict;
+use Data::Dumper;
+
+
+sub init {
+    my $self = shift;
+    my $config = $self->config;
+
+    $self->{plugin_name} = 'clientlog';
+    $self->read_client_ctrl('dunno', $config->{clientlog_dunno});
+    $self->read_client_ctrl('helo', $config->{clientlog_helo});
+}
+
+sub pre_hook {
+    my $self = shift;
+    my $helo = $self->ar->{helo_name};
+    my $ip = $self->ar->{client_address};
+    my $name = $self->ar->{client_name};
+    my $sender = $self->ar->{sender};
+    my $recip = $self->ar->{recipient};
+    my $config = $self->config;
+    my $item = "item";
+#    $self->debug(1,"clientlog init: $helo $ip $name");
+    if ($name eq 'unknown'){
+	$item = 'helo='.$helo.' ip='.$ip.' sender='.$sender.' recip='.$recip;
+    	for my $b (@{$self->{helo_clients}}) {
+	    if ("$item\n" eq $b){
+	        return $self->{default_act};
+	    }
+	}
+#	$self->debug(1,"clientlog helo: $item");
+	$self->write_client_ctrl($item, $config->{clientlog_helo});
+    }else{
+	$item = 'helo='.$helo.' ip='.$ip.' client='.$name.' sender='.$sender.' recip='.$recip;
+        for my $w (@{$self->{dunno_clients}}) {
+	    if ("$item\n" eq $w){
+		return $self->{default_act};
+	    }
+        }
+#	$self->debug(1,"clientlog name: $item");
+	$self->write_client_ctrl($item, $config->{clientlog_dunno});
+    }
+    'DUNNO';
+}
+sub read_client_ctrl{
+    my ($self, $type, $file) = @_;
+    my (@clients);
+    return unless (-r $file);
+
+    open (FH, $file) or return;
+    while (<FH>) {
+#        s/#.*$//; s/^\s+//; s/\s+$//; next if $_ eq '';
+#        if(/^\/(\S+)\/$/) {
+#            # regular expression
+#            push @clients, qr{$1}i;
+#        } elsif(/^\S+$/) {
+#            # note: we had ^[^\s\/]+$ but it triggers a bug in perl 5.8.0
+#            push @clients, qr{\Q$_\E$}i;
+#        } else {
+#            $self->debug(1,"WARNING: $file line $.: unlike a client name");
+#        }
+	 next if $_ eq '';
+	 push @clients, $_;
+    }
+    close FH;
+
+    $self->{$type.'_clients'}     = \@clients;
+}
+sub write_client_ctrl{
+    my ($self, $client, $file) = @_;
+    return unless (-r $file);
+
+    open (FH2, ">>$file") or return;
+    print FH2 "$client\n";
+    close FH2;
+}

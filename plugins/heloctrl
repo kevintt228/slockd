@@ -1,0 +1,82 @@
+#!perl
+# vim: set cindent expandtab ts=4 sw=4:
+
+# heloctrl     HELO control plugin
+#
+# description: including whitelist and blacklist, can easily integrade
+#              with postfix, currently only support plain text format
+use strict;
+use Data::Dumper;
+
+
+#sub pre_hook { return 'DUNNO' }
+
+#sub hook {
+#    my $self = shift;
+#    my $ar = $self->ar; # APF resource
+#
+#    return 'DUNNO';
+#}
+#
+#sub post_hook {
+#    my $self = shift;
+#    my $tr = $self->tr; # Net::Server object
+#
+#    return 'DUNNO';
+#}
+#
+#sub cleanup { 'do some cleanup here' }
+
+
+sub init {
+    my $self = shift;
+    my $config = $self->config;
+
+    $self->{plugin_name} = 'heloctrl';
+    $self->read_helo_ctrl('white', $config->{heloctrl_wl});
+    $self->read_helo_ctrl('black', $config->{heloctrl_bl});
+}
+
+sub pre_hook {
+    my $self = shift;
+    my $helo = $self->ar->{helo_name};
+    my $ip = $self->ar->{client_address};
+    my $name = $self->ar->{client_name};
+
+    return $self->{default_act} if ($name ne 'unknown');
+
+    # white list for Helo
+    for my $w (@{$self->{white_helos}}) {
+        return $self->{default_act} if ($helo =~ $w);
+    }
+#    $self->debug(1,"WARNING: helo_name $helo $ip $name");
+    # black list for Helo
+    for my $b (@{$self->{black_helos}}) {
+        return '554 blocked by heloctrl'.
+               '',
+               if ($helo =~ $b);
+    }
+    'DUNNO';
+}
+sub read_helo_ctrl{
+    my ($self, $type, $file) = @_;
+    my (@helos);
+    return unless (-r $file);
+
+    open (FH, $file) or return;
+    while (<FH>) {
+        s/#.*$//; s/^\s+//; s/\s+$//; next if $_ eq '';
+        if(/^\/(\S+)\/$/) {
+            # regular expression
+            push @helos, qr{$1}i;
+        } elsif(/^\S+$/) {
+            # note: we had ^[^\s\/]+$ but it triggers a bug in perl 5.8.0
+            push @helos, qr{\Q$_\E$}i;
+        } else {
+            $self->debug(1,"WARNING: $file line $.: unlike a helo name");
+        }
+    }
+    close FH;
+
+    $self->{$type.'_helos'}     = \@helos;
+}

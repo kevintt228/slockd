@@ -39,10 +39,10 @@ action_type = policy
 # plugin config #
 #---------------#
 
-# spamtrap plugin - a trap for spammer that collecting our trap address
-spamtrap_plugin = yes
-spamtrap_list = config/spamtrap_list
-spamtrap_action = FILTER spamtrap:
+# the HELO plugin
+heloctrl_plugin = yes
+heloctrl_bl = config/helo_blacklist
+heloctrl_wl = config/helo_whitelist
 
 # localctrl plugin - for white/black list
 localctrl_plugin = yes
@@ -60,6 +60,12 @@ peruserctrl_sockpath = /var/spool/authdaemon/socket
 # the module to get user maildir path
 peruesrctrl_module = authlib
 
+# spamtrap plugin - a trap for spammer that collecting our trap address
+spamtrap_plugin = no
+spamtrap_list = config/spamtrap_list
+spamtrap_action = FILTER lmtp:[127.0.0.1]:10028
+#spamtrap:
+
 # the SPF plugin
 spf_plugin = yes
 # set soft_reject to yes will reject the client with 450 instead
@@ -69,24 +75,28 @@ spf_soft_reject = no
 spf_default_action = DUNNO
 
 # the RBL lookup plugin
-dnsbl_plugin = yes
+dnsbl_plugin = no
 # set soft_reject to yes will reject the client with 450 instead
 # off 5xx smtp error code
-dnsbl_soft_reject = no
+dnsbl_soft_reject = yes
 # rbl server list, using postfix style configuration
 # hints: trying dul.dnsbl.sorbs.net may block those dynamic IPs
 dnsbl_server_list =
   zen.spamhaus.org,
   bl.spamcop.net,
-  cblplus.anti-spam.org.cn,
+#  cblless.anti-spam.org.cn,
   dnsbl.sorbs.net,
   b.barracudacentral.org,
   dul.dnsbl.sorbs.net,
-  hostkarma.junkemailfilter.com,
+#  hostkarma.junkemailfilter.com,
 
 # the Greaylist implemention plugin
-greylist_plugin = yes
+greylist_plugin = no
 # the greylist db full path, eg: (hash|btree):/path/to/greaylist.db
 greylist_db = /var/lib/greylist.db
 # the greylist delay time in seconds, default 300
-greylist_delay = 60
+greylist_delay = 30
+
+clientlog_plugin = no
+clientlog_dunno = config/clientlog_dunno
+clientlog_helo = config/clientlog_helo
