@@ -1,7 +1,5 @@
-qsed-abuse01@hzqbbc.com
-
 # the sample spamtrap domain
-#@extmail.net
+@extmail.net
 # the sample spamtrap domain in regexp
 #/\@extmail\.org$/
 # the sample honey recipient
