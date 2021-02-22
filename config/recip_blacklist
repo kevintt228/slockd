@@ -9,3 +9,9 @@
 #webmaster@sex.com
 # the sample blacklist sender in regexp
 #/^\john@sex\.com$/
+@yahoo.con.cn
+@souhu.com
+@ddddd.com
+/\.c0m$/
+/\.c0m\.cn$/
+k@yhsr.com
