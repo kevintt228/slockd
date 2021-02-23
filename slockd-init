@@ -26,6 +26,7 @@ case "$1" in
 	echo "Stopping spam locker daemon: slockd";
 	if [ -f $PID_FILE ]; then
 		kill `cat $PID_FILE`
+		sleep 1
 		if [ -f $PID_FILE ]; then
 			rm $PID_FILE
 		fi
