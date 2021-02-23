@@ -54,9 +54,9 @@ sub sender_permitted_from {
   # "?" Neutral
 
   if    ($result eq "pass")     { return "DUNNO" }
-  elsif ($result eq "fail")     { return "$code see http://bl.extmail.org/cgi/why?spf=$attr{sender}"; }
-  elsif ($result eq "softfail") { return "451 see http://bl.extmail.org/cgi/why?spf=$attr{sender}"; }
-  elsif ($result eq "neutral")  { return "451 see http://bl.extmail.org/cgi/why?spf=$attr{sender}"; }
+  elsif ($result eq "fail")     { return "$code spf=$attr{sender}"; }
+  elsif ($result eq "softfail") { return "451 spf=$attr{sender}"; }
+  elsif ($result eq "neutral")  { return "451 spf=$attr{sender}"; }
   elsif ($result eq "error")    { return "450 temporary failure: $smtp_comment"; }
   else                          { return $self->{default_act} }
   # unknown, neutral and none all return DUNNO

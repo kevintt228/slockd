@@ -31,6 +31,7 @@ sub pre_hook {
     $key = lc "$ar->{client_address}/$ar->{sender}/$ar->{recipient}";
     $time_stamp = $self->lookup($key) || 0;
     $now = time();
+    my ($bl, $listip) = $self->handle_dns;
 
     # If this is a new request add this client/sender/recipient to db
     if ($time_stamp == 0) {
@@ -42,7 +43,7 @@ sub pre_hook {
     if ($now - $time_stamp > $self->{delay}) {
         return "DUNNO";
     } else {
-        return "defer_if_permit Try again, see http://bl.extmail.org/cgi/why?greylist";
+        return "defer_if_permit Try again, greylist checking $lastip";
     }
 }
 

@@ -44,7 +44,7 @@ sub pre_hook {
     my $config = $self->config;
     my $code = ($config->{dnsbl_soft_reject} eq 'yes' ? '450' : '554');
     my ($bl, $listip) = $self->handle_dns;
-    return "$code blocked using $bl, see http://bl.extmail.org/cgi/rbl?$listip", if $bl;
+    return "$code blocked using $bl, blocked ip $listip", if $bl;
     'DUNNO';
 }
 

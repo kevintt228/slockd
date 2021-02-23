@@ -46,7 +46,7 @@ sub pre_hook {
     # black list for sender
     for my $b (@{$bl}) {
         return "504 blocked by $recip,".
-               ' see http://bl.extmail.org/cgi/why?peruserctrl',
+               ' peruserctrl',
                if $sender =~ /^$b$/i;
     }
 
