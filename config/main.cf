@@ -18,7 +18,7 @@ log_file	/var/log/slockd.log
 # 0 - err , 1 - warn, 2 - notice
 # 3 - info, 4 - debug
 log_level	1
-pid_file	/var/run/slockd.pid
+pid_file	/var/run/slockd/slockd.pid
 
 ## PreFork setting
 # min_spare_servers must less than min_servers!

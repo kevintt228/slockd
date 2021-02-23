@@ -12,7 +12,7 @@
 PATH=/bin:/usr/bin
 BASE=/usr/local/slockd
 BIN=$BASE/slockd
-PID_FILE=/var/run/slockd.pid
+PID_FILE=/var/run/slockd/slockd.pid
 
 cd $BASE
 
