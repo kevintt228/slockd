@@ -6,7 +6,7 @@
 # description: Spam locker daemon - a policy server
 #
 # processname: slockd
-# pidfile: /var/run/slockd.pid
+# pidfile: /var/run/slockd/slockd.pid
 
 
 PATH=/bin:/usr/bin
@@ -18,6 +18,9 @@ cd $BASE
 
 case "$1" in
 'start')
+	if [ ! -d /var/run/slockd ]; then mkdir /var/run/slockd; fi;
+	chown nobody.nobody /var/run/slockd -R;
+
 	echo "Starting spam locker daemon: slockd";
 	nice -19 $BIN
 	;;
