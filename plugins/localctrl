@@ -52,28 +52,28 @@ sub pre_hook {
     # black list for sender
     for my $b (@{$self->{black_senders}}) {
         return '504 blocked by localctrl, '.
-               'senders=$sender',
+               "senders=$sender",
                if ($sender =~ $b);
     }
 
     # black list for recipient
     for my $b (@{$self->{black_recips}}) {
         return '504 blocked by localctrl, '.
-               'recipient=$recip',
+               "recipient=$recip",
                if ($recip =~ $b);
     }
 
     # black list for PTR
     for my $b (@{$self->{black_clients}}) {
         return '504 blocked by localctrl, '.
-               'PTR=$cli',
+               "PTR=$cli",
                if ($cli =~ $b);
     }
 
     # black list for ipaddrs
     for my $b (@{$self->{black_ips}}) {
         return '504 blocked by localctrl, '.
-               'ipaddr=$ip',
+               "ipaddr=$ip",
                if ($ip =~ $b);
     }
     'DUNNO';
