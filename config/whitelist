@@ -1,3 +1,10 @@
+\.hktdc\.com$/
+/\.sf-express\.com$/
+apmaila.evergreen.com.tw
+/\.dahsing\.com$/
+/s\d+mx\d+\.siteserve\.jp$/
+/\.smtp-out\.amazonses\.com$/
+/\.ssls\.com$/
 /\.cnnic\.cn$/
 /\.advancepact\.com$/
 /\.apnic\.net$/
@@ -26,7 +33,7 @@ opsmail.colo.comodo.com
 /\.mta\.salesforce\.com$/
 oamail.evergreen.com.tw
 /\.yangming\.com$/
-/\.outbound\.protection\.outlook\.com$/
+#/\.outbound\.protection\.outlook\.com$/
 /\.panalpina\.com$/
 /\.koreanair\.com$/
 222.76.212.105
@@ -1070,3 +1077,8 @@ mail.malata.com
 promotion.pingan.com
 /^mailout\d\.pingan\.com\.cn$/
 /^mail\d\.weidmueller\.de$/
+mailman.nlnetlabs.nl
+/^smtp\d+\.submail\.cn$/
+mail.bmetenergy.com
+mail.owas-outlooks398.com
+mail.909.com.tw
